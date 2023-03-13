@@ -67,19 +67,18 @@ def run():
         Xd = np.vstack( (Xd, np.ones(Xd.shape[1])) )
         X = A @ Xd
         X = X.astype(int)
-        # Xd = Xd.astype(int)
+        Xd = Xd.astype(int)
 
-        filtro = ((Xd[0,:]>=0) & (Xd[0,:]<image_.shape[0])) & ((Xd[1,:]>=0) & (Xd[1,:]<image_.shape[1]))
+        filtro = ((X[0,:]>=0) & (X[0,:]<image.shape[0])) & ((X[1,:]>=0) & (X[1,:]<image.shape[1]))
         X = X[:, filtro]
         Xd = Xd[:, filtro]
 
         image_[Xd[0,:], Xd[1,:], :] = image[X[0,:], X[1,:], :]
         
-
         ##Código daqui para cima
 
         # Agora, mostrar a imagem na tela!
-        cv.imshow('Minha Imagem!', image)
+        cv.imshow('Minha Imagem!', image_)
         
         # Se aperto 'q', encerro o loop
         if cv.waitKey(1) == ord('q'):
