@@ -1,3 +1,4 @@
+import math
 import numpy as np
 
 # Instalar a biblioteca cv2 pode ser um pouco demorado. Não deixe para ultima hora!
@@ -29,6 +30,8 @@ def run():
     # Dica: imagens menores precisam de menos processamento!!!
     width = 320
     height = 240
+    # width = 1920
+    # height = 1080
 
     # Talvez o programa não consiga abrir a câmera. Verifique se há outros dispositivos acessando sua câmera!
     if not cap.isOpened():
@@ -38,11 +41,13 @@ def run():
     # Esse loop é igual a um loop de jogo: ele encerra quando apertamos 'q' no teclado.
 
     velocity = 1/60
+    i = 0
     R = rotMatrix(velocity)
     R_inv = np.linalg.inv(R)
-    T = transMatrix([width, height])
+    T = transMatrix([width/2, height/2])
     T_inv = np.linalg.inv(T)
-    A = T_inv @ R_inv @ T
+    A = T_inv @ R @ T
+    
     while True:
         
         # Captura um frame da câmera
@@ -65,7 +70,7 @@ def run():
 
         Xd = criar_indices(0, width, 0, height)
         Xd = np.vstack( (Xd, np.ones(Xd.shape[1])) )
-        X = A @ Xd
+        X = np.linalg.inv(A) @ Xd
         X = X.astype(int)
         Xd = Xd.astype(int)
 
@@ -75,6 +80,8 @@ def run():
 
         image_[Xd[0,:], Xd[1,:], :] = image[X[0,:], X[1,:], :]
         
+        A = T_inv @ rotMatrix((velocity*i)) @ T
+        i += 1
         ##Código daqui para cima
 
         # Agora, mostrar a imagem na tela!
