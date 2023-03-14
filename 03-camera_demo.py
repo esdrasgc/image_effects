@@ -68,15 +68,17 @@ def run():
 
         ##código daqui para baixo
 
-        Xd = criar_indices(0, width, 0, height)
+        Xd = criar_indices(0, image.shape[0], 0, image.shape[1])
         Xd = np.vstack( (Xd, np.ones(Xd.shape[1])) )
         X = np.linalg.inv(A) @ Xd
+        # X = Xd
         X = X.astype(int)
         Xd = Xd.astype(int)
 
-        filtro = ((X[0,:]>=0) & (X[0,:]<image.shape[0])) & ((X[1,:]>=0) & (X[1,:]<image.shape[1]))
-        X = X[:, filtro]
+        filtro = (X[0,:] >=0) & (X[0,:] < image_.shape[0]) & (X[1,:] >=0) & (X[1,:] < image_.shape[1])
         Xd = Xd[:, filtro]
+        X = X[:, filtro]
+        
 
         image_[Xd[0,:], Xd[1,:], :] = image[X[0,:], X[1,:], :]
         
