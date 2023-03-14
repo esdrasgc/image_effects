@@ -44,7 +44,7 @@ def run():
     i = 0
     R = rotMatrix(velocity)
     R_inv = np.linalg.inv(R)
-    T = transMatrix([width/2, height/2])
+    T = transMatrix([-height/2, -width/2])
     T_inv = np.linalg.inv(T)
     A = T_inv @ R @ T
     
