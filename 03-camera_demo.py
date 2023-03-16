@@ -1,18 +1,14 @@
 import math
 import numpy as np
 
-# Instalar a biblioteca cv2 pode ser um pouco demorado. Não deixe para ultima hora!
 import cv2 as cv
 
-## create a rotation matrix based on the angle
 def rotMatrix(angle):
     return np.array([[np.cos(angle), -np.sin(angle), 0], [np.sin(angle), np.cos(angle), 0], [0, 0, 1]])
 
-## create a translation matrix based on the vector
 def transMatrix(vector):
     return np.array([[1, 0, vector[0]], [0, 1, vector[1]], [0, 0, 1]])
 
-## create a function that creates a grid of indices
 
 def criar_indices(min_i, max_i, min_j, max_j):
     import itertools
@@ -23,11 +19,8 @@ def criar_indices(min_i, max_i, min_j, max_j):
     return idx
 
 def run():
-    # Essa função abre a câmera. Depois desta linha, a luz de câmera (se seu computador tiver) deve ligar.
     cap = cv.VideoCapture(0)
 
-    # Aqui, defino a largura e a altura da imagem com a qual quero trabalhar.
-    # Dica: imagens menores precisam de menos processamento!!!
     width = 320
     height = 240
     # width = 1920
@@ -47,19 +40,18 @@ def run():
     T = transMatrix([-height/2, -width/2])
     T_inv = np.linalg.inv(T)
     A = T_inv @ R @ T
+    degree = 0
     
     while True:
         
         # Captura um frame da câmera
         ret, frame = cap.read()
 
-        # A variável `ret` indica se conseguimos capturar um frame
         if not ret:
             print("Não consegui capturar frame!")
             break
 
-        # Mudo o tamanho do meu frame para reduzir o processamento necessário
-        # nas próximas etapas
+
         frame = cv.resize(frame, (width,height), interpolation =cv.INTER_AREA)
 
         # A variável image é um np.array com shape=(width, height, colors)
@@ -82,16 +74,26 @@ def run():
 
         image_[Xd[0,:], Xd[1,:], :] = image[X[0,:], X[1,:], :]
         
-        A = T_inv @ rotMatrix((velocity*i)) @ T
+        degree += velocity
+        A = T_inv @ rotMatrix((degree)) @ T
         i += 1
-        ##Código daqui para cima
-
-        # Agora, mostrar a imagem na tela!
         cv.imshow('Minha Imagem!', image_)
         
         # Se aperto 'q', encerro o loop
         if cv.waitKey(1) == ord('q'):
             break
+
+        elif cv.waitKey(1) == ord('a'):
+            velocity = velocity- (1/60)
+            print("Velocidade angular: ", velocity)
+        elif cv.waitKey(1) == ord('d'): 
+            velocity = velocity + (1/60)
+
+        if cv.waitKey(1) == ord('x'):
+            # change the collor of the frame to black and white
+            image_ = cv.applyColorMap(image_, cv.COLORMAP_WINTER)
+
+            
 
     # Ao sair do loop, vamos devolver cuidadosamente os recursos ao sistema!
     cap.release()
