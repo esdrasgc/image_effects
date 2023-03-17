@@ -9,6 +9,9 @@ def rotMatrix(angle):
 def transMatrix(vector):
     return np.array([[1, 0, vector[0]], [0, 1, vector[1]], [0, 0, 1]])
 
+def cisMatrix(percentage1, percentage2):
+    return np.array([[1, percentage1, 0], [percentage2, 1, 0], [0, 0, 1]])
+
 
 def criar_indices(min_i, max_i, min_j, max_j):
     import itertools
@@ -40,8 +43,10 @@ def run():
     T = transMatrix([-height/2, -width/2])
     T_inv = np.linalg.inv(T)
     A = T_inv @ R @ T
+    C = cisMatrix(0, 0)
+    C_antigo = C
     degree = 0
-    
+    percentage1, percentage2 = 0, 0
     while True:
         
         # Captura um frame da câmera
@@ -75,10 +80,10 @@ def run():
         image_[Xd[0,:], Xd[1,:], :] = image[X[0,:], X[1,:], :]
         
         degree += velocity
-        A = T_inv @ rotMatrix((degree)) @ T
+        A = T_inv @ C @ rotMatrix((degree)) @ T
         i += 1
         cv.imshow('Minha Imagem!', image_)
-        
+        C_antigo = C
         # Se aperto 'q', encerro o loop
         if cv.waitKey(1) == ord('q'):
             break
@@ -88,11 +93,24 @@ def run():
             print("Velocidade angular: ", velocity)
         elif cv.waitKey(1) == ord('d'): 
             velocity = velocity + (1/60)
-
-        if cv.waitKey(1) == ord('x'):
-            # change the collor of the frame to black and white
-            image_ = cv.applyColorMap(image_, cv.COLORMAP_WINTER)
-
+        elif cv.waitKey(1) == ord('c'):
+            if percentage1 < 1:
+                percentage1 += 1/10
+                C = cisMatrix(percentage1=percentage1, percentage2=percentage2)
+                print(percentage1)
+        elif cv.waitKey(1) == ord('x'):
+            if percentage1 > -1:
+                percentage1 -= 1/10
+                C = cisMatrix(percentage1=percentage1, percentage2=percentage2)
+                print(percentage1)
+        elif cv.waitKey(1) == ord('v'):
+            if percentage2 < 1:
+                percentage2 += 1/10
+                C = cisMatrix(percentage1=percentage1, percentage2=percentage2)
+        elif cv.waitKey(1) == ord('b'):
+            if percentage2 > -1:
+                percentage2 -= 1/10
+                C = cisMatrix(percentage1=percentage1, percentage2=percentage2)
             
 
     # Ao sair do loop, vamos devolver cuidadosamente os recursos ao sistema!
