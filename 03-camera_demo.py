@@ -21,6 +21,8 @@ def criar_indices(min_i, max_i, min_j, max_j):
     idx = np.vstack( (idx_i, idx_j) )
     return idx
 
+
+
 def run():
     cap = cv.VideoCapture(0)
 
@@ -28,7 +30,10 @@ def run():
     height = 240
     # width = 1920
     # height = 1080
-
+    # Criando objeto VideoWriter
+    fourcc = cv.VideoWriter_fourcc(*'mp4v')  # Codec de vídeo
+    out = cv.VideoWriter('output.mp4', fourcc, 20.0, (width, height))
+    
     # Talvez o programa não consiga abrir a câmera. Verifique se há outros dispositivos acessando sua câmera!
     if not cap.isOpened():
         print("Não consegui abrir a câmera!")
@@ -111,10 +116,14 @@ def run():
             if percentage2 > -1:
                 percentage2 -= 1/10
                 C = cisMatrix(percentage1=percentage1, percentage2=percentage2)
+
+
+        out.write((image_*255).astype(np.uint8))
             
 
     # Ao sair do loop, vamos devolver cuidadosamente os recursos ao sistema!
     cap.release()
+    out.release()
     cv.destroyAllWindows()
 
 run()
